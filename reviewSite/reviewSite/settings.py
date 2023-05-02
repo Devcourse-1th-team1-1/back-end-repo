@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'common', # User - Sign in & Sign up
+    'widget_tweaks',
+    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 common 아래 줄에 추가해주세요!!
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +61,7 @@ ROOT_URLCONF = 'reviewSite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/ 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,16 +93,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'common.validators.CustomPasswordValidator', # Custom Validator로 바꿈
     },
 ]
 
@@ -105,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko' # 한국어로 설정 바꿈
 
 TIME_ZONE = 'UTC'
 
@@ -118,8 +114,47 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
+
+AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Authentication 처리
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_SIGNUP_REDIRECT_URL = 'index' # 회원가입 이후 redirect 되는 페이지
+LOGIN_REDIRECT_URL = 'index' # 로그인 이후 redirect 되는 페이지
+LOGIN_URL = 'account_login' # 댓글 작성하려면 로그인 (추후 처리)
+
+ACCOUNT_LOGOUT_ON_GET = True # 로그아웃할 때 진짜 로그아웃 하겠냐는 페이지 안 뜨도록
+ACCOUNT_AUTHENTICATION_METHOD = 'email' # 이메일로 로그인하도록 설정
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FORM_CLASS = 'common.forms.SignupForm'
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_PASSWORD_INPUT_RENDER_VALUE = True # 회원가입 시 비밀번호는 맞으면 초기화 안됨
+
+#ACCOUNT_EMAIL_VARIFICATION = 'mandatory' # 이메일 인증 의무 - mandatory, optional, none
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'account_email_confirmation_done'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = 'account_email_confirmation_done'
+
+# 이메일 처리
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/' # 클라우드 이미지를 위한 미디어 파일

@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}로그인 | MOVIE_REVIEW_CLOUD{% endblock title %}
+
+{% block content %}
+<div class="account-background">
+  <main class="account">
+    <div class="title">
+      <a href="{% url 'index' %}">
+        <img class="logo" src="{% static 'assets/movieReviewCloud-logo.png' %}" alt="MOVIE_REVIEW_CLOUD Logo">
+      </a>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      {% for error in form.non_field_errors %}
+        <div class="form-error error-message">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+      {% endfor %}
+      <div>
+        {{ form.login|add_class:"us-input"|attr:"placeholder:이메일"|add_error_class:"error" }}
+        {% for error in form.email.errors %} <!-- 이메일 입력 오류 -->
+          <div class="error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div>
+        {{ form.password|add_class:"us-input"|attr:"placeholder:비밀번호"|add_error_class:"error" }}
+        {% for error in form.password.errors %} <!-- 비밀번호 입력 오류 -->
+          <div class="error-message">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <button class="us-button" type="submit">로그인</button>
+    </form>
+    
+    <div class="info">
+      <a class="item" href="{% url 'account_reset_password' %}">비밀번호 찾기</a>
+      <a class="item" href="{% url 'account_signup' %}">회원가입</a>
+    </div>
+  </main>
+</div>
+{% endblock content %}
