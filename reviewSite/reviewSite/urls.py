@@ -15,8 +15,29 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+from common.views import CustomPasswordChangeView
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
+    # common.urls에 Main page 담김 (index.html)
+    path('', include('common.urls')),
+    # allauth
+    path(
+        'email-confirmation-done/', # 터미널에 뜨는 이메일 인증 링크 타고 들어가면 이메일 인증 완료
+        TemplateView.as_view(template_name='account/email_confirmation_done.html'),
+        name='account_email_confirmation_done',
+    ),
+    path(
+        'password/change/',
+        CustomPasswordChangeView.as_view(),
+        name='account_password_change',
+    ),
+    path('', include('allauth.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

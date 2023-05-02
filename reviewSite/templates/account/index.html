@@ -1,0 +1,41 @@
+{% extends "base/base_with_navbar.html" %}
+
+{% block content %}
+<main class="site-body">
+  <div class="content-list max-content-width">
+    <div class="header">
+      <h2>영화 목록</h2>
+    </div>
+
+      <div class="contents">
+        <!-- 10개 영화 들어갈 곳 -->
+      </div>
+      <!-- 페이지네이션
+      {% if is_paginated %}
+        <footer>
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li><a href="?page=1">처음</a></li>
+              <li><a href="?page={{ page_obj.previous_page_number }}">이전</a></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="current">{{ num }}</li>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li><a href="?page={{ num }}">{{ num }}</a></li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li><a href="?page={{ page_obj.next_page_number }}">다음</a></li>
+              <li><a href="?page={{ page_obj.paginator.num_pages }}">마지막</a></li>
+            {% endif %}
+          </ul>
+        </footer>
+      {% endif %}
+      -->
+    </article>
+  </div>
+</main>
+{% endblock content %}
