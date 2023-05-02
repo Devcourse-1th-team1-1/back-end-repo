@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'common', # User - Sign in & Sign up
+    'pull_data',
     'widget_tweaks',
     'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 common 아래 줄에 추가해주세요!!
     'allauth.account',
