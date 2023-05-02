@@ -1,8 +1,7 @@
-"""
-URL configuration for reviewSite project.
+"""USGajo URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+    https://docs.djangoproject.com/en/4.0/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -17,19 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+
 from django.conf import settings
 from django.conf.urls.static import static
-from common.views import CustomPasswordChangeView
+from album.views import CustomPasswordChangeView
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-    # common.urls에 Main page 담김 (index.html)
-    path('', include('common.urls')),
+    # Album
+    path('', include('album.urls')),
     # allauth
     path(
-        'email-confirmation-done/', # 터미널에 뜨는 이메일 인증 링크 타고 들어가면 이메일 인증 완료
-        TemplateView.as_view(template_name='account/email_confirmation_done.html'),
+        'email-confirmation-done/',
+        TemplateView.as_view(template_name='album/email_confirmation_done.html'),
         name='account_email_confirmation_done',
     ),
     path(

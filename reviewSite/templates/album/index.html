@@ -5,12 +5,31 @@
   <div class="content-list max-content-width">
     <div class="header">
       <h2>영화 목록</h2>
+      <a class="us-ic-button newalbum" href="{% url 'album-create' %}">게시글 작성</a>
     </div>
 
       <div class="contents">
-        <!-- 10개 영화 들어갈 곳 -->
+        {% for album in albums %}
+          <a href="{% url 'album-detail' album.id %}">
+            <section class="us-card content">
+                <div class="thumb" style="background-image: url('{{ album.image1.url }}');"></div>
+              <div class="body">
+                <h2 class="title">{{ album.title }}</h2>
+                <date class="date">{{ album.dt_created|date:"Y년 n월 j일" }}</date>
+                <div class="metadata">
+                  <div class="album-author">
+                    <span>{{ album.author.nickname }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </a>
+        {% empty %}
+          <p class="empty">아직 게시된 영화 리뷰 클라우드가 없습니다.</p>
+        {% endfor %}
+          
       </div>
-      <!-- 페이지네이션
+
       {% if is_paginated %}
         <footer>
           <ul class="pagination">
@@ -34,7 +53,6 @@
           </ul>
         </footer>
       {% endif %}
-      -->
     </article>
   </div>
 </main>
