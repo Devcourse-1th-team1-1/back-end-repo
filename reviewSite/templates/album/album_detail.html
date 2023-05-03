@@ -33,6 +33,9 @@
         <div class="comment-count">댓글 수: {{ album.comment_set.count }}개</div>
       </div>
       {% if user.is_authenticated %}
+        {% if error_message %}
+          <div class="alert comment-alert">{{ error_message }}</div>
+        {% endif %}
         <form class="comment-form" method="post" action="{% url 'comment-create' album_id=album.id %}" autocomplete="off" >
           {% csrf_token %}
           <div class="comment-input">

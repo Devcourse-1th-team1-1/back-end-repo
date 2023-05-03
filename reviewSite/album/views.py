@@ -68,6 +68,12 @@ class AlbumDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self, user):
         album = self.get_object()
         return album.author == user
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['error_message'] = self.request.GET.get('error_message')
+        return context
+
 
 class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
@@ -78,24 +84,13 @@ def comment_create(request, album_id):
     if request.method == 'POST':
         album = Album.objects.get(pk=album_id)
         content = request.POST.get('content')
-        if content: # 빈 댓글은 생성하지 않음
-            Comment.objects.create(
-                content=content,
-                author=request.user,
-                album=album,
-            )
+        if not content: # 빈 댓글은 생성하지 않음
+            error_message = '댓글 내용을 입력해주세요.'
+            context = {'error_message': error_message, 'album': album}
+            return render(request, 'album/album_detail.html', context)
+        Comment.objects.create(
+            content=content,
+            author=request.user,
+            album=album,
+        )
     return redirect('album-detail', album_id)
-
-# def vote(request, question_id):
-#     question = get_object_or_404(Question, pk=question_id)
-#     try:
-#         selected_choice = question.choice_set.get(pk=request.POST['choice'])
-#     except (KeyError, Choice.DoesNotExist):
-#         return render(request, 'polls/detail.html', {
-#             'question': question,
-#             'error_message': "선택한 항목이 없습니다."
-#         })
-#     else:
-#         selected_choice.votes = F('votes') + 1
-#         selected_choice.save()
-#         return HttpResponseRedirect(reverse('polls:result', args=(question.id,)))
