@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from allauth.account.views import PasswordChangeView
 from django.urls import reverse
@@ -9,8 +9,9 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-from album.models import Album
+from album.models import Album, Comment
 from album.forms import AlbumForm
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -25,6 +26,7 @@ class AlbumDetailView(DetailView):
     model = Album
     template_name = 'album/album_detail.html'
     pk_url_kwarg = 'album_id'
+
 
 class AlbumCreateView(LoginRequiredMixin, CreateView):
     model = Album
@@ -70,3 +72,30 @@ class AlbumDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         return reverse('index')
+    
+
+def comment_create(request, album_id):
+    if request.method == 'POST':
+        album = Album.objects.get(pk=album_id)
+        content = request.POST.get('content')
+        if content: # 빈 댓글은 생성하지 않음
+            Comment.objects.create(
+                content=content,
+                author=request.user,
+                album=album,
+            )
+    return redirect('album-detail', album_id)
+
+# def vote(request, question_id):
+#     question = get_object_or_404(Question, pk=question_id)
+#     try:
+#         selected_choice = question.choice_set.get(pk=request.POST['choice'])
+#     except (KeyError, Choice.DoesNotExist):
+#         return render(request, 'polls/detail.html', {
+#             'question': question,
+#             'error_message': "선택한 항목이 없습니다."
+#         })
+#     else:
+#         selected_choice.votes = F('votes') + 1
+#         selected_choice.save()
+#         return HttpResponseRedirect(reverse('polls:result', args=(question.id,)))
