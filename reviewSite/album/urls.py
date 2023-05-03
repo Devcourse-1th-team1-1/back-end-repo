@@ -19,4 +19,7 @@ urlpatterns = [
         views.AlbumDeleteView.as_view(),
         name='album-delete',
     ),
+    #path(
+    #    
+    #),
 ]
