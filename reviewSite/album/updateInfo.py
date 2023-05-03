@@ -11,6 +11,7 @@ import sqlite3
 # 파일들의 경로
 path = 'updateInfoFile/'
 
+
 # csv 파일 불러오기
 df = pd.read_csv(path + "reviews_total.csv")
 df2 = pd.read_csv(path + "reviews_ranking.csv")
@@ -19,11 +20,13 @@ k_stopword = list(k_stopword['불용어'])
 k_stopword.append('영화')
 k_stopword.append('더')
 
+
 # mask로 쓸 이미지 파일 부르기
 img1 = path + 'Rotten_Tomatoes.png'
 img2 = path + 'Rotten_Tomatoes_rotten.png'
 mask_p = np.array(Image.open(img1))
 mask_n = np.array(Image.open(img2))
+
 
 # rate가 문자인 경우 삭제, 이상한 단어 삭제
 df['rate'] = df['rate'].str.replace(pat=r'[ㄱ-ㅣ가-힣]+', repl= r'', regex=True)
@@ -38,9 +41,11 @@ df['label'] = np.select([df.rate>=3.5], [1], default=0)
 tokenizer = Okt()
 df['tokenized'] = df['review'].apply(tokenizer.nouns)
 
+
 # DB 연결
-conn = sqlite3.connect("./../db.sqlite3") # 장고에서 이게 맞나?
+conn = sqlite3.connect("./../db.sqlite3") # 장고에서 이게 맞나? 경로가 얘 하나로 되는건가
 cur = conn.cursor()
+
 
 # 영화 랭킹 순으로 긍정, 부정 워드 클라우드 만들기
 for i in range(0,len(df2)):
@@ -59,6 +64,7 @@ for i in range(0,len(df2)):
 
     rank_text_p=dict(positive_count)
     rank_text_n=dict(negative_count)
+
 
     # 불용어 제거
     temp_dic_p={}
@@ -89,17 +95,20 @@ for i in range(0,len(df2)):
         mask = mask_n
     )
 
+
     wordcloud_p = wordcloud_p.generate_from_frequencies(temp_dic_p)
     wordcloud_n = wordcloud_n.generate_from_frequencies(temp_dic_n)
     image_colors_p = ImageColorGenerator(mask_p)
     image_colors_n = ImageColorGenerator(mask_n)
 
+
     # Title 업데이트
-    title = df2['title'][i].to_string() # 이게 맞나?
-    query = "UPDATE album SET title = '%s' WHERE id = '%s'" % (title, str(i+1)) # 이름이 다 맞긴하나 확인
+    title = df2['title'][i]
+    query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
     cur.execute(query) # 쿼리 실행
 
     conn.commit() # DB에 반영
+
 
     # 이미지 저장할 경로
     img_save_path = './../media/album_pics/'
@@ -131,10 +140,9 @@ for i in range(0,len(df2)):
     plt.savefig(total_img_save_path)
 
     # 포스터 변경
-    poster_url = df2['img'][i].to_string()
+    poster_url = df2['img'][i]
     os.system("curl " + poster_url + " > " + img_save_path + "%s_poster.jpg" % (str(i+1)))
-    # 덮어쓰기가 되는건가? 확인 필요
-    
+    # 덮어쓰기가 된다 헤헤
 
 # for문 끝나고 DB 연결 해제
 cur.close()
