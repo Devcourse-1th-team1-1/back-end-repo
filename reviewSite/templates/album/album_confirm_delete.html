@@ -1,0 +1,14 @@
+{% extends "base/base_with_navbar.html" %}
+
+{% block title %}{{ album.title }} | movieReviewCloud{% endblock title %}
+
+{% block content %}
+<main class="site-body">
+  <form class="dialog album-confirm-delete" method="post">
+    {% csrf_token %}
+    <span class="content">정말 리뷰 클라우드를 삭제하시겠습니까?</span>
+    <button class="us-button warn" type="submit">삭제</button>
+    <a class="us-button secondary" href="{% url 'album-detail' album.id %}">취소</a>
+  </form>
+</main>
+{% endblock content %}
