@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
@@ -22,6 +24,8 @@ class IndexView(ListView):
     paginate_by = 10
     ordering = ['-dt_created'] # 최신순으로
 
+
+@method_decorator(login_required, name='dispatch')
 class AlbumDetailView(DetailView):
     model = Album
     template_name = 'album/album_detail.html'
@@ -29,7 +33,7 @@ class AlbumDetailView(DetailView):
     
     def post(self, request, *args, **kwargs):
         album = self.get_object()
-        album.update_votes()
+        album.update_votes(request.user)
         return self.get(request,*args,**kwargs)
 
 

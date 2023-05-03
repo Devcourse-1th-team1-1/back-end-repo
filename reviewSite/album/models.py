@@ -13,10 +13,14 @@ class Album(models.Model):
     author = models.ForeignKey('common.User', on_delete=models.CASCADE) # 리뷰 글 작성자 (Admin으로 일단)
 
     votes_n = models.PositiveIntegerField(default=0)
+    voters = models.ManyToManyField('common.User', related_name='liked_albums')
 
-    def update_votes(self):
-        self.votes_n += 1
-        self.save()
+    
+    def update_votes(self, user):
+        if user not in self.voters.all():
+            self.votes_n += 1
+            self.voters.add(user)
+            self.save()
 
     def __str__(self):
         return self.title
