@@ -49,12 +49,14 @@
 
 .comment-form {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   margin-top: 20px;
 }
 
 .comment-input {
   margin-bottom: 1rem;
+  width: 85%;
 }
 
 .us-input {
