@@ -1,0 +1,76 @@
+{% extends "base/base_with_navbar.html" %}
+
+{% load widget_tweaks %}
+
+<!-- 글 수정 or 글 게시 -->
+{% block title %}
+  {% if album %}
+    {{ album.title }}
+  {% else %}
+    새 포스트 작성
+  {% endif %} | movieReviewCloud
+{% endblock title %}
+
+
+{% block content %}
+<main class="site-body">
+  <form class="album-form max-content-width" method="post" autocomplete="off" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="title">
+      {{ form.title|add_class:"us-input"|attr:"placeholder:제목" }}
+      {% for error in form.title.errors %} <!-- 에러 처리 -->
+        <div class="error-message">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="file">
+      <div class="file-content">
+        {% if album.image1 %} <!-- 업로드 시 이미지 미리보기 -->
+          <img src="{{ album.image1.url }}">
+        {% endif %}
+        <div>
+          {{ form.image1 }}
+          {% for error in form.image1.errors %}
+            <div class="error-message">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="file">
+      <div class="file-content">
+        {% if album.image2 %} <!-- 업로드 시 이미지 미리보기 -->
+          <img src="{{ album.image2.url }}">
+        {% endif %}
+        <div>
+          {{ form.image2 }}
+          {% for error in form.image2.errors %}
+            <div class="error-message">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="file">
+      <div class="file-content">
+        {% if album.image3 %} <!-- 업로드 시 이미지 미리보기 -->
+          <img src="{{ album.image3.url }}">
+        {% endif %}
+        <div>
+          {{ form.image3 }}
+          {% for error in form.image3.errors %}
+            <div class="error-message">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <a
+        class="us-button secondary cancel"
+        href="{% if album %}{% url 'album-detail' album.id %} {% else %}{% url 'index' %} {% endif %}"
+      >
+        취소
+      </a>
+      <button class="us-button submit" type="submit">완료</button>
+    </div>
+  </form>
+</main>
+{% endblock content %}

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,8 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-import os
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.path.join(BASE_DIR, 'secrets.json')
@@ -39,13 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'common', # User - Sign in & Sign up
-    'pull_data',
+    'django.contrib.sites',
+    'common',
+    'album',
+    # 여기에 추가
     'widget_tweaks',
-    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 common 아래 줄에 추가해주세요!!
+    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 주석 처리한 부분에 추가해주세요.
     'allauth.account',
     'allauth.socialaccount',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -94,7 +97,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'common.validators.CustomPasswordValidator', # Custom Validator로 바꿈
+        'NAME': 'common.validators.CustomPasswordValidator',
     },
 ]
 
@@ -102,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'ko' # 한국어로 설정 바꿈
+LANGUAGE_CODE = 'ko' # 한국어
 
 TIME_ZONE = 'UTC'
 
@@ -119,14 +122,10 @@ STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
 
 AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# Authentication 처리
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -138,7 +137,7 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_SIGNUP_REDIRECT_URL = 'index' # 회원가입 이후 redirect 되는 페이지
 LOGIN_REDIRECT_URL = 'index' # 로그인 이후 redirect 되는 페이지
-LOGIN_URL = 'account_login' # 댓글 작성하려면 로그인 (추후 처리)
+LOGIN_URL = 'account_login' # 글 작성하려면 로그인
 
 ACCOUNT_LOGOUT_ON_GET = True # 로그아웃할 때 진짜 로그아웃 하겠냐는 페이지 안 뜨도록
 ACCOUNT_AUTHENTICATION_METHOD = 'email' # 이메일로 로그인하도록 설정
