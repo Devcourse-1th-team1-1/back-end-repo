@@ -12,5 +12,11 @@ class Album(models.Model):
 
     author = models.ForeignKey('common.User', on_delete=models.CASCADE) # 리뷰 글 작성자 (Admin으로 일단)
 
+    votes_n = models.PositiveIntegerField(default=0)
+
+    def update_votes(self):
+        self.votes_n += 1
+        self.save()
+
     def __str__(self):
         return self.title

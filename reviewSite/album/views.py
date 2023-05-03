@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from allauth.account.views import PasswordChangeView
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     ListView,
     DetailView,
@@ -25,6 +26,12 @@ class AlbumDetailView(DetailView):
     model = Album
     template_name = 'album/album_detail.html'
     pk_url_kwarg = 'album_id'
+    
+    def post(self, request, *args, **kwargs):
+        album = self.get_object()
+        album.update_votes()
+        return self.get(request,*args,**kwargs)
+
 
 class AlbumCreateView(LoginRequiredMixin, CreateView):
     model = Album
@@ -70,3 +77,4 @@ class AlbumDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         return reverse('index')
+    
