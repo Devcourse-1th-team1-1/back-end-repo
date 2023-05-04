@@ -30,8 +30,17 @@
   
       <form action="{% url 'album-detail' album_id=object.pk %}" method="post">
         {% csrf_token %}
+        <input type="hidden" name="vote_type" value="like">
         <button type="submit">좋아요</button>
-      </form> <div> {{ object.votes_n }} </div>
+      </form>
+      <div>{{ object.positive_votes_n }}</div>
+
+      <form action="{% url 'album-detail' album_id=object.pk %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="vote_type" value="dislike">
+        <button type="submit">싫어요</button>
+      </form>
+      <div>{{ object.negative_votes_n }}</div>
     </div>
 
     <div class="comment">

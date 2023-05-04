@@ -26,15 +26,20 @@ class IndexView(ListView):
     ordering = ['-dt_created'] # 최신순으로
 
 
-@method_decorator(login_required, name='dispatch')
+
 class AlbumDetailView(DetailView):
     model = Album
     template_name = 'album/album_detail.html'
     pk_url_kwarg = 'album_id'
     
+    @method_decorator(login_required, name='dispatch')
     def post(self, request, *args, **kwargs):
         album = self.get_object()
-        album.update_votes(request.user)
+        vote_type = request.POST.get('vote_type')
+        if vote_type == 'like':
+            album.update_positive_votes(request.user)
+        elif vote_type == 'dislike' :
+            album.update_negative_votes(request.user)
         return self.get(request,*args,**kwargs)
 
 
