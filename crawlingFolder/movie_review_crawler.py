@@ -155,7 +155,7 @@ class ReviewScraper:
 
                 if len(self.reviews) >= 200:
                     break
-            print(f"현재까지 reviews: {len(self.reviews)}")
+            # print(f"현재까지 reviews: {len(self.reviews)}")
         
         # driver.quit()
         print(f"Total reviews: {len(self.reviews)}")
