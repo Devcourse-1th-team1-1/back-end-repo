@@ -1,5 +1,7 @@
 crawlingFolder/chromedriver
 crawlingFolder/backup/reviews_one_movie.csv
+crawlingFolder/data/movie_ranking.csv
+crawlingFolder/data/movie_reviews_total.csv
 
 secrets.json
 movie-env/
