@@ -98,7 +98,7 @@ class ReviewScraper:
                 chrome_options.add_argument(option)
 
         service = ChromeService(executable_path=driver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver = webdriver.Chrome(driver_path, options=chrome_options)
         return driver
 
     def driver_initialize(self):
