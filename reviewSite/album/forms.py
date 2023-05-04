@@ -2,7 +2,6 @@ from django import forms
 from .models import *
 
 
-
 class AlbumForm(forms.ModelForm):
     class Meta:
         model = Album
@@ -13,4 +12,3 @@ class AlbumForm(forms.ModelForm):
             'image3',
         ]
         exclude = ()
-        
