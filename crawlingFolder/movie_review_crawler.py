@@ -35,7 +35,7 @@ def driver_get(executable_path):
             "--no-sandbox"
             "--disable-gpu",
             "--start-maximized",
-            "--window-size=1980,1030",
+            # "--window-size=1980,1030",
             # "--window-size=1920,1200",
             "--ignore-certificate-errors",
             "--disable-infobars",
@@ -84,7 +84,7 @@ class ReviewScraper:
             "--no-sandbox"
             "--disable-gpu",
             "--start-maximized",
-            "--window-size=1980,1030",
+            # "--window-size=1980,1030",
             # "--window-size=1920,1200",
             "--ignore-certificate-errors",
             "--disable-infobars",
