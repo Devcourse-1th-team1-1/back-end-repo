@@ -24,3 +24,16 @@ class Album(models.Model):
 
     def __str__(self):
         return self.title
+    
+    
+class Comment(models.Model):
+    content = models.CharField(max_length=300)
+
+    dt_created = models.DateTimeField(auto_now_add=True)
+    dt_updated = models.DateTimeField(auto_now=True)
+
+    author = models.ForeignKey('common.User', on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content[:50]

@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
+=======
+from django.shortcuts import render, redirect
+>>>>>>> b2d1f27adca25a952da0081617ece7baedd552de
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from allauth.account.views import PasswordChangeView
 from django.urls import reverse, reverse_lazy
@@ -12,8 +16,9 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-from album.models import Album
+from album.models import Album, Comment
 from album.forms import AlbumForm
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -35,6 +40,7 @@ class AlbumDetailView(DetailView):
         album = self.get_object()
         album.update_votes(request.user)
         return self.get(request,*args,**kwargs)
+
 
 
 class AlbumCreateView(LoginRequiredMixin, CreateView):
@@ -77,8 +83,32 @@ class AlbumDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self, user):
         album = self.get_object()
         return album.author == user
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['error_message'] = self.request.GET.get('error_message')
+        return context
+
 
 class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         return reverse('index')
     
+<<<<<<< HEAD
+=======
+
+def comment_create(request, album_id):
+    if request.method == 'POST':
+        album = Album.objects.get(pk=album_id)
+        content = request.POST.get('content')
+        if not content: # 빈 댓글은 생성하지 않음
+            error_message = '댓글 내용을 입력해주세요.'
+            context = {'error_message': error_message, 'album': album}
+            return render(request, 'album/album_detail.html', context)
+        Comment.objects.create(
+            content=content,
+            author=request.user,
+            album=album,
+        )
+    return redirect('album-detail', album_id)
+>>>>>>> b2d1f27adca25a952da0081617ece7baedd552de
