@@ -560,3 +560,47 @@
   .album-author > :not(:last-child) {
     margin-right: 10px;
   }
+
+  .vote-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .vote-wrapper img {
+    width: 20px;
+    margin-right: 5px;
+  }
+  
+  .vote-count {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .like-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .like-button:hover {
+    background-color: #3E8E41;
+  }
+  
+  .dislike-button {
+    background-color: #F44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dislike-button:hover {
+    background-color: #D32F2F;
+  }
