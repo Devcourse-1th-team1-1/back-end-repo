@@ -58,7 +58,7 @@ jobs:
 
       - name: Scrape reviews and save to CSV - movie_review_crawler.py
         run: |
-          python ./movie_review_crawler.py
+          python ./crawlingFolder/movie_review_crawler.py
 
       # - name: Commit files
       #   run: |
