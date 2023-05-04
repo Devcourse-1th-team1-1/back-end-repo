@@ -31,6 +31,7 @@ mask_n = np.array(Image.open(img2))
 
 
 # 영화제목 콜론(:) 문자열 '-'로 변환
+df=df.replace({'movie_title':{':':'-'}},regex=True)
 df2=df2.replace({'title':{':':'-'}},regex=True)
 
 # rate가 문자인 경우 삭제, 이상한 단어 삭제
@@ -47,7 +48,7 @@ tokenizer = Okt()
 df['tokenized'] = df['review'].apply(tokenizer.nouns)
 
 # 영화 랭킹 순으로 긍정, 부정 워드 클라우드 만들기
-for i in range(0,len(df2)):
+for i in range(6,7):
 
     df3=df.loc[df['movie_title']==df2['title'][i]]
     print(df2['title'][i])
