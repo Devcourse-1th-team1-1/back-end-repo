@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'common',
     'album',
-    #'django_crontab',
     'widget_tweaks',
     'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 함
     'allauth.account',
@@ -123,9 +123,9 @@ STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
 AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
 
 # Crontab 적용
-#CRONJOBS = [
-#    ('*/3 * * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'config/log/cron.log')),
-#]
+CRONJOBS = [
+    ('*/5 * * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'config/log/cron.log') + ' 2>&1'),
+]
 
 
 # Default primary key field type
