@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from allauth.account.views import PasswordChangeView
 from django.urls import reverse
@@ -9,8 +9,9 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-from album.models import Album
+from album.models import Album, Comment
 from album.forms import AlbumForm
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -25,6 +26,7 @@ class AlbumDetailView(DetailView):
     model = Album
     template_name = 'album/album_detail.html'
     pk_url_kwarg = 'album_id'
+
 
 class AlbumCreateView(LoginRequiredMixin, CreateView):
     model = Album
@@ -66,7 +68,29 @@ class AlbumDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self, user):
         album = self.get_object()
         return album.author == user
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['error_message'] = self.request.GET.get('error_message')
+        return context
+
 
 class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         return reverse('index')
+    
+
+def comment_create(request, album_id):
+    if request.method == 'POST':
+        album = Album.objects.get(pk=album_id)
+        content = request.POST.get('content')
+        if not content: # 빈 댓글은 생성하지 않음
+            error_message = '댓글 내용을 입력해주세요.'
+            context = {'error_message': error_message, 'album': album}
+            return render(request, 'album/album_detail.html', context)
+        Comment.objects.create(
+            content=content,
+            author=request.user,
+            album=album,
+        )
+    return redirect('album-detail', album_id)

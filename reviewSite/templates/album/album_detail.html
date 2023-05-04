@@ -27,6 +27,54 @@
       {% endif %}
     </div>
 
+    <div class="comment">
+      <div class="comment-header">
+        <h2 class="comment-title">댓글</h2>
+        <div class="comment-count">댓글 수: {{ album.comment_set.count }}개</div>
+      </div>
+      {% if user.is_authenticated %}
+        {% if error_message %}
+          <div class="alert comment-alert">{{ error_message }}</div>
+        {% endif %}
+        <form class="comment-form" method="post" action="{% url 'comment-create' album_id=album.id %}" autocomplete="off" >
+          {% csrf_token %}
+          <div class="comment-input">
+            <textarea class="us-input" name="content" placeholder="댓글을 입력하세요."></textarea>
+          </div>
+          <div class="comment-submit">
+            <button class="us-button primary" type="submit">댓글 작성</button>
+          </div>
+        </form>
+      {% else %}
+        <div class="comment-form">
+          <div class="comment-input">
+            <textarea class="us-input" name="content" placeholder="로그인 후 댓글을 작성할 수 있습니다." disabled></textarea>
+          </div>
+          <div class="comment-submit">
+            <button class="us-button primary" type="submit" disabled>댓글 작성</button>
+          </div>
+        </div>
+      {% endif %}
+      <div class="comment-list">
+        {% for comment in album.comment_set.all %}
+          <div class="comment-item">
+            <div class="comment-author">
+              <a class="comment-author-name">
+                <span>{{ comment.author.nickname }}</span>
+              </a>
+            </div>
+            <div class="comment-content">
+              <p>{{ comment.content }}</p>
+            </div>
+            <div class="comment-date">
+              <date>{{ comment.dt_created|date:"Y년 n월 j일" }}</date>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+    </div>
+
     <div class="footer">
       <a class="back-link" href="{% url 'index' %}">&lt; 목록으로</a>
       {% if album.author == user %}
