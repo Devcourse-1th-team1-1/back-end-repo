@@ -7,14 +7,10 @@ from konlpy.tag import Okt # 형태소 분석기 Okt
 from collections import Counter
 import os
 import sqlite3
+from datetime import datetime
 
-"""
-경로가 사람마다 달라지니까 주의하세요!! update_info 안에서 print(os.getcwd())로 확인하기
-"""
-DB_PATH = "ttt/back-end-repo/reviewSite/db.sqlite3" # DB 경로
-IMG_SAVE_PATH = 'ttt/back-end-repo/reviewSite/media/album_pics/' # 이미지 저장할 경로
-PATH = 'ttt/back-end-repo/reviewSite/album/updateInfoFile/' # 워드클라우드 생성 위한 베이스 파일 경로
-
+def hello_every_minute():
+    print('hello')
 
 def update_info():
     """
@@ -22,18 +18,31 @@ def update_info():
     TOP10 영화의 포스터와 이들의 리뷰에 따른 워드클라우드 이미지, 영화 제목, 현재 날짜를 교체합니다.
     """
 
+    """
+    경로가 사람마다 다를 수도 있으니 주의하세요!! 만약 오류가 난다면 로그를 확인해주세요
+    """
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # print(BASE_DIR)
+    # print(os.getcwd())
+
+    # DB_PATH = "ttt/back-end-repo/reviewSite/db.sqlite3" # DB 경로
+    DB_PATH = os.path.join(BASE_DIR, 'db.sqlite3') # DB 경로
+    IMG_SAVE_PATH = os.path.join(BASE_DIR, 'media/album_pics/') # 이미지 저장할 경로
+    WORD_CLOUD_DATA_PATH = os.path.join(BASE_DIR, 'album/updateInfoFile/') # 워드클라우드 생성 위한 베이스 파일 경로
+
+
     # csv 파일 불러오기
-    df = pd.read_csv(PATH + "reviews_total.csv")
-    df2 = pd.read_csv(PATH + "reviews_ranking.csv")
-    k_stopword = pd.read_csv(PATH + "korean_stopword.csv")
+    df = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_reviews_total.csv'))
+    df2 = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_rankings.csv'))
+    k_stopword = pd.read_csv(WORD_CLOUD_DATA_PATH + "korean_stopword.csv")
     k_stopword = list(k_stopword['불용어'])
     k_stopword.append('영화')
     k_stopword.append('더')
 
 
     # mask로 쓸 이미지 파일 부르기
-    img1 = PATH + 'Rotten_Tomatoes.png'
-    img2 = PATH + 'Rotten_Tomatoes_rotten.png'
+    img1 = WORD_CLOUD_DATA_PATH + 'Rotten_Tomatoes.png'
+    img2 = WORD_CLOUD_DATA_PATH + 'Rotten_Tomatoes_rotten.png'
     mask_p = np.array(Image.open(img1))
     mask_n = np.array(Image.open(img2))
 
@@ -89,7 +98,7 @@ def update_info():
 
 
         wordcloud_p = WordCloud(
-            font_path = PATH + 'NanumGothic.ttf',
+            font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
             width = 500,
             height = 500,
             background_color = "white",
@@ -97,7 +106,7 @@ def update_info():
         )
 
         wordcloud_n = WordCloud(
-            font_path = PATH + 'NanumGothic.ttf',
+            font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
             width = 500,
             height = 500,
             background_color = "white",
@@ -154,4 +163,18 @@ def update_info():
     cur.close()
     conn.close()
 
-    print('Done.') # log 확인을 위해서 종료 메시지 추가
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f'{now} : Done web page update.') # log 확인을 위해서 종료 메시지 추가
+
+
+def save_csv_from_git():
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    movie_df = pd.read_csv('https://raw.githubusercontent.com/Devcourse-1th-team1-1/back-end-repo/crawling/crawlingFolder/backup/movie_rankings.csv')
+    
+    review_df = pd.read_csv('https://raw.githubusercontent.com/Devcourse-1th-team1-1/back-end-repo/crawling/crawlingFolder/backup/movie_reviews_total.csv')
+    
+    movie_df.to_csv(os.path.join(BASE_DIR, 'data/movie_rankings.csv'), index=False)
+    review_df.to_csv(os.path.join(BASE_DIR, 'data/movie_reviews_total.csv'), index=False)
+    print(f'{now} : save_csv_from_git')

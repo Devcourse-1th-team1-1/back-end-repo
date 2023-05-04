@@ -12,41 +12,51 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+# import secrets
 
+# 새로운 SECRET_KEY 생성
+# secret_key = secrets.token_hex(24)
+# print(secret_key)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.path.join(BASE_DIR, 'secrets.json')
+# SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
-INSTALLED_APPS = [
-    'django_crontab',
+DJANGO_APPS = [
+    'django_crontab', # crontab 추가
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
+    'django.contrib.sites'
+    ]
+
+PROJECT_APPS = [
     'common',
-    'album',
+    'album'
+]
+
+THIRD_PARTY_APPS = [
     'widget_tweaks',
     'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 함
     'allauth.account',
-    'allauth.socialaccount',
+    'allauth.socialaccount'
 ]
+
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
 SITE_ID = 1
 
@@ -80,7 +90,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'reviewSite.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -99,6 +108,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'common.validators.CustomPasswordValidator',
     },
+]
+
+# crontab 추가
+CRONJOBS = [
+    # test
+    # ('*/5 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
+    # 자정 추가
+    ('0 0 * * *', 'album.cron.save_csv_from_git', '>> ' + os.path.join(BASE_DIR, 'log/data_save.log') + ' 2>&1 '),
+    ('0 0 * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'log/web_update_cron.log') + ' 2>&1')
 ]
 
 
@@ -121,11 +139,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
 
 AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
-
-# Crontab 적용
-CRONJOBS = [
-    ('*/5 * * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'config/log/cron.log') + ' 2>&1'),
-]
 
 
 # Default primary key field type

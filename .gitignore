@@ -1,3 +1,8 @@
+crawlingFolder/chromedriver
+crawlingFolder/backup/reviews_one_movie.csv
+
+
+
 secrets.json
 movie-env/
 
