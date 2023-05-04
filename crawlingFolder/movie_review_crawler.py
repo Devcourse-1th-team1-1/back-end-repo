@@ -80,13 +80,14 @@ class ReviewScraper:
         chrome_options = Options()
         options = [
             "--headless=new",
+            "--no-sandbox"
             "--disable-gpu",
-            # "--window-size=1920,1200",
+            "--start-maximized",
             "--window-size=1980,1030",
+            # "--window-size=1920,1200",
             "--ignore-certificate-errors",
             "--disable-infobars",
             "--disable-extensions",
-            "--no-sandbox"
             "--disable-dev-shm-usage"
         ]
         # ua = UserAgent(verify_ssl=False)
