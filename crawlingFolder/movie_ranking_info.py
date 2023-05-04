@@ -79,7 +79,8 @@ if __name__ == "__main__":
     output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-        
+    
     file_path = os.path.join(output_folder, "movie_rankings.csv")
     scraper.save_to_csv(file_path)
     print(file_path)
+    
