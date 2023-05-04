@@ -31,15 +31,16 @@ def driver_get(executable_path):
     
     chrome_options = Options()
     options = [
-        "--headless=new",
-        "--disable-gpu",
-        # "--window-size=1920,1200",
-        "--window-size=1980,1030",
-        "--ignore-certificate-errors",
-        "--disable-infobars",
-        "--disable-extensions",
-        "--no-sandbox"
-        "--disable-dev-shm-usage"
+            "--headless=new",
+            "--no-sandbox"
+            "--disable-gpu",
+            "--start-maximized",
+            "--window-size=1980,1030",
+            # "--window-size=1920,1200",
+            "--ignore-certificate-errors",
+            "--disable-infobars",
+            "--disable-extensions",
+            "--disable-dev-shm-usage"
     ]
     # ua = UserAgent(verify_ssl=False)
     # user_agent = ua.random
@@ -47,9 +48,9 @@ def driver_get(executable_path):
     if options:
         for option in options:
             chrome_options.add_argument(option)
-
-    service = ChromeService(executable_path=driver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # service = ChromeService(executable_path=driver_path)
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(driver_path, options=chrome_options)
     return driver
 
 
@@ -98,7 +99,7 @@ class ReviewScraper:
             for option in options:
                 chrome_options.add_argument(option)
 
-        service = ChromeService(executable_path=driver_path)
+        # service = ChromeService(executable_path=driver_path)
         driver = webdriver.Chrome(driver_path, options=chrome_options)
         return driver
 
