@@ -26,6 +26,34 @@
         <img class="thumb" src="{{ album.image3.url }}">
       {% endif %}
     </div>
+    <div class="btn-group me-2" role="group" aria-label="First group">
+      <div>
+        <form action="{% url 'album-detail' album_id=object.pk %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="vote_type" value="like">
+          <button class="btn btn-outline-secondary" type="submit">
+            <div class="vote-wrapper">
+              <img src="{% static 'assets/thumbs-up-regular.svg' %}" alt="icon">
+              <span class="vote-count">{{ object.positive_votes_n }}</span>
+            </div>
+          </button>
+        </form>
+      </div>
+      <div>
+        <form action="{% url 'album-detail' album_id=object.pk %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="vote_type" value="dislike">
+          <button class="btn btn-outline-secondary" type="submit">
+            <div class="vote-wrapper">
+              <img src="{% static 'assets/thumbs-down-regular.svg' %}" alt="icon">
+              <span class="vote-count">{{ object.negative_votes_n }}</span>
+            </div>
+          </button>
+        </form>
+      </div>
+    </div>
+    
+
 
     <div class="comment">
       <div class="comment-header">
