@@ -2,10 +2,10 @@ name: Movie Review Scraper
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # every day at 00:00 UTC
+    - cron: '*/20 * * * *'  # every day at 00:00 UTC
   push:
     branches:
-      - main
+      - crawling
 
 jobs:
   scrape:
@@ -44,7 +44,7 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install requirements
-        run: pip install -r ./requirements.txt
+        run: pip install -r ./crawlingFolder/requirements.txt
 
       # - name: Setup Chromedriver
       #   uses: nanasess/setup-chromedriver@v2.0.0
@@ -52,13 +52,13 @@ jobs:
       # - name: Change chromedriver permission
       #   run: chmod +x ./chromedriver
 
-      - name: Scrape reviews and save to CSV - movie_ranking_info.py
+      - name: Scrape movie ranking and save to CSV - movie_ranking_info.py
         run: |
-          python ./movie_ranking_info.py
+          python ./crawlingFolder/movie_ranking_info.py
 
-      - name: Scrape reviews and save to CSV - movie_review_crawler.py
-        run: |
-          python ./movie_review_crawler.py
+      # - name: Scrape reviews and save to CSV - movie_review_crawler.py
+      #   run: |
+      #     python ./movie_review_crawler.py
 
       - name: Commit files
         run: |
