@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os 
+from datetime import datetime
 
 
 class MovieScraper:
@@ -24,6 +25,7 @@ class MovieScraper:
             movie_mean_rate = movie_li.find(class_='average css-xgmur2').find_all('span')[1].text
 
             movie = dict()
+            movie["date"] = datetime.now().strftime("%Y-%m-%d")
             movie["rank"] = idx + 1
             movie["title"] = movie_title
             movie["mean_rate"] = movie_mean_rate
