@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
-=======
-from django.shortcuts import render, redirect
->>>>>>> b2d1f27adca25a952da0081617ece7baedd552de
 from braces.views import LoginRequiredMixin, UserPassesTestMixin
 from allauth.account.views import PasswordChangeView
 from django.urls import reverse, reverse_lazy
@@ -94,8 +90,6 @@ class CustomPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         return reverse('index')
     
-<<<<<<< HEAD
-=======
 
 def comment_create(request, album_id):
     if request.method == 'POST':
@@ -111,4 +105,3 @@ def comment_create(request, album_id):
             album=album,
         )
     return redirect('album-detail', album_id)
->>>>>>> b2d1f27adca25a952da0081617ece7baedd552de
