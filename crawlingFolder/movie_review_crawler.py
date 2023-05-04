@@ -31,14 +31,15 @@ def driver_get(executable_path):
     
     chrome_options = Options()
     options = [
-        # "--headless",
-        # "--disable-gpu",
-        "--window-size=1920,1200",
-        # "--ignore-certificate-errors",
+        "--headless=new",
+        "--disable-gpu",
+        # "--window-size=1920,1200",
+        "--window-size=1980,1030",
+        "--ignore-certificate-errors",
         "--disable-infobars",
         "--disable-extensions",
-        # "--no-sandbox",
-        # "--disable-dev-shm-usage"
+        "--no-sandbox"
+        "--disable-dev-shm-usage"
     ]
     # ua = UserAgent(verify_ssl=False)
     # user_agent = ua.random
@@ -78,14 +79,15 @@ class ReviewScraper:
         
         chrome_options = Options()
         options = [
-            # "--headless",
-            # "--disable-gpu",
-            "--window-size=1920,1200",
-            # "--ignore-certificate-errors",
+            "--headless=new",
+            "--disable-gpu",
+            # "--window-size=1920,1200",
+            "--window-size=1980,1030",
+            "--ignore-certificate-errors",
             "--disable-infobars",
             "--disable-extensions",
-            # "--no-sandbox",
-            # "--disable-dev-shm-usage"
+            "--no-sandbox"
+            "--disable-dev-shm-usage"
         ]
         # ua = UserAgent(verify_ssl=False)
         # user_agent = ua.random
@@ -117,7 +119,10 @@ class ReviewScraper:
 
         print("crawling start -> scroll height: ",prev_height)
         while len(self.reviews) < 200:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            # window.scrollTo(0,document.body.clientHeight)
+
+            # driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            driver.execute_script("window.scrollTo(0, document.body.clientHeight)")
             time.sleep(2)
             current_height = driver.execute_script("return document.body.scrollHeight")
             if current_height == prev_height:
@@ -177,7 +182,7 @@ if __name__ == "__main__":
         scraper.get_reviews()
 
         cnt = 0
-        while len(scraper.reviews) < 5 and cnt < 5:
+        while len(scraper.reviews) < 5 and cnt < 3:
             scraper = ReviewScraper(movie_url=movie_url, driver = chrome_driver, executable_path=chrome_driver_path,
                                     movie_title=movie_title)
             scraper.get_reviews()
