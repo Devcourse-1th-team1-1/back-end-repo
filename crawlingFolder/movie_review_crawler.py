@@ -115,10 +115,11 @@ class ReviewScraper:
         driver.implicitly_wait(5)
         
         driver.get(movie_comment_link)
-        driver.implicitly_wait(13) # 웹 브라우저 창이 열리는데, 이 창이 완전히 로드되기 까지 5초간 대기
+        driver.implicitly_wait(10) # 웹 브라우저 창이 열리는데, 이 창이 완전히 로드되기 까지 5초간 대기
         # element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "css-10n5vg9-VisualUl ep5cwgq0")))
-        prev_height = driver.execute_script("return document.body.clientHeight")
-        # prev_height = driver.execute_script("return document.body.scrollHeight")
+        prev_height = driver.execute_script("document.documentElement.style.height = '100%'; return document.body.clientHeight;")
+
+        # prev_height = driver.execute_script("return document.body.scrollHeight") # clientHeight
         print("crawling start -> scroll height: ",prev_height)
         while len(self.reviews) < 200:
             # window.scrollTo(0,document.body.clientHeight)
@@ -126,7 +127,7 @@ class ReviewScraper:
             # driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
             driver.execute_script("window.scrollTo(0, document.body.clientHeight)")
             time.sleep(2)
-            current_height = driver.execute_script("return document.body.clientHeight")
+            current_height = driver.execute_script("return document.body.clientHeight;")
             if current_height == prev_height:
                 break
             prev_height = current_height
