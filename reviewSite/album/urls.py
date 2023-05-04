@@ -19,7 +19,9 @@ urlpatterns = [
         views.AlbumDeleteView.as_view(),
         name='album-delete',
     ),
-    #path(
-    #    
-    #),
+    path(
+        'albums/info_update/',
+        views.movie_info_update,
+        name='movie_info_update',
+    ),
 ]

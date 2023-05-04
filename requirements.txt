@@ -10,6 +10,7 @@ defusedxml==0.7.1
 Django==4.2
 django-allauth==0.54.0
 django-braces==1.15.0
+django-crontab==0.7.1
 django-widget-tweaks==1.4.12
 fonttools==4.39.3
 idna==3.4

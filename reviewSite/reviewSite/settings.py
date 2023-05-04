@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'common',
     'album',
-    # 여기에 추가
+    #'django_crontab',
     'widget_tweaks',
-    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 주석 처리한 부분에 추가해주세요.
+    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 함
     'allauth.account',
     'allauth.socialaccount',
 ]
@@ -121,6 +121,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
 
 AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
+
+# Crontab 적용
+#CRONJOBS = [
+#    ('*/3 * * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'config/log/cron.log')),
+#]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
