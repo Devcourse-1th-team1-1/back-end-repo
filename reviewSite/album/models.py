@@ -18,13 +18,13 @@ class Album(models.Model):
     negative_voters = models.ManyToManyField('common.User', related_name='disliked_albums')
 
     def update_positive_votes(self, user):
-        if user not in self.positive_voters.all():
+        if user not in self.positive_voters.all() and user not in self.negative_voters.all():
             self.positive_votes_n += 1
             self.positive_voters.add(user)
             self.save()
 
     def update_negative_votes(self, user):
-        if user not in self.negative_voters.all():
+        if user not in self.negative_voters.all() and user not in self.positive_voters.all():
             self.negative_votes_n += 1
             self.negative_voters.add(user)
             self.save()
