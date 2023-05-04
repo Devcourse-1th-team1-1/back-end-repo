@@ -71,7 +71,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: data
       # - name: Commit and push changes
       #   uses: stefanzweifel/git-auto-commit-action@v4
         # with:
