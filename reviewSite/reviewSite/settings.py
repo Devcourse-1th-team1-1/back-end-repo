@@ -33,7 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-DJANGO_APPS = [    
+DJANGO_APPS = [
+    'django_crontab', # crontab 추가
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,10 +51,9 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = [
     'widget_tweaks',
-    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 해서, app을 새로 만들면 주석 처리한 부분에 추가해주세요.
+    'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 함
     'allauth.account',
-    'allauth.socialaccount',
-    'django_crontab' # crontab 추가
+    'allauth.socialaccount'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -113,9 +113,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # crontab 추가
 CRONJOBS = [
     # test
-    # ('*/20 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
+    # ('*/5 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
     # 자정 추가
-    ('0 0 * * *', 'album.cron.save_csv_from_git', '>> ' + os.path.join(BASE_DIR, 'log/data_save.log') + ' 2>&1 ')
+    ('0 0 * * *', 'album.cron.save_csv_from_git', '>> ' + os.path.join(BASE_DIR, 'log/data_save.log') + ' 2>&1 '),
+    ('5 0 * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'log/web_update_cron.log') + ' 2>&1')
 ]
 
 
@@ -138,6 +139,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS =[ BASE_DIR / 'static', ] # static 폴더 경로 지정
 
 AUTH_USER_MODEL = 'common.User' # Auth 유저 모델 지정
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

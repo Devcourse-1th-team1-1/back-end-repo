@@ -16,14 +16,13 @@ from album.models import Album, Comment
 from album.forms import AlbumForm
 from django.core.exceptions import ValidationError
 
-# Create your views here.
 
 class IndexView(ListView):
     model = Album
     template_name = 'album/index.html'
     context_object_name = 'albums'
     paginate_by = 10
-    ordering = ['-dt_created'] # 최신순으로
+    ordering = ['id'] # 아이디순으로
 
 
 
