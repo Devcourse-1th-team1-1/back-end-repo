@@ -9,8 +9,8 @@ import os
 import sqlite3
 from datetime import datetime
 
-def hello_every_minute():
-    print('hello')
+#def hello_every_minute():
+#    print('hello')
 
 def update_info():
     """
@@ -25,7 +25,6 @@ def update_info():
     # print(BASE_DIR)
     # print(os.getcwd())
 
-    # DB_PATH = "ttt/back-end-repo/reviewSite/db.sqlite3" # DB 경로
     DB_PATH = os.path.join(BASE_DIR, 'db.sqlite3') # DB 경로
     IMG_SAVE_PATH = os.path.join(BASE_DIR, 'media/album_pics/') # 이미지 저장할 경로
     WORD_CLOUD_DATA_PATH = os.path.join(BASE_DIR, 'album/updateInfoFile/') # 워드클라우드 생성 위한 베이스 파일 경로
@@ -43,9 +42,14 @@ def update_info():
     # mask로 쓸 이미지 파일 부르기
     img1 = WORD_CLOUD_DATA_PATH + 'Rotten_Tomatoes.png'
     img2 = WORD_CLOUD_DATA_PATH + 'Rotten_Tomatoes_rotten.png'
+    img_white = WORD_CLOUD_DATA_PATH + 'white.png'
     mask_p = np.array(Image.open(img1))
     mask_n = np.array(Image.open(img2))
+    img_w = np.array(Image.open(img_white))
 
+    # 영화제목 콜론(:) 문자열 '-'로 변환
+    df=df.replace({'movie_title':{':':'-'}},regex=True)
+    df2=df2.replace({'title':{':':'-'}},regex=True)
 
     # rate가 문자인 경우 삭제, 이상한 단어 삭제
     df['rate'] = df['rate'].str.replace(pat=r'[ㄱ-ㅣ가-힣]+', repl= r'', regex=True)
@@ -74,90 +78,228 @@ def update_info():
         # 해당 영화에 리뷰가 없을경우 continue
         if len(df3) == 0:
             continue
-        positive_reviews = np.hstack(df3[df3['label']==1]['tokenized'].values)
-        negative_reviews = np.hstack(df3[df3['label']==0]['tokenized'].values)
 
-        positive_count=Counter(positive_reviews)
-        negative_count=Counter(negative_reviews)
+        elif len(df3[df3['label']==1]['tokenized'])!=0 and len(df3[df3['label']==0]['tokenized'])!=0: 
+            positive_reviews = np.hstack(df3[df3['label']==1]['tokenized'].values)
+            negative_reviews = np.hstack(df3[df3['label']==0]['tokenized'].values)
 
-        rank_text_p=dict(positive_count)
-        rank_text_n=dict(negative_count)
+            positive_count=Counter(positive_reviews)
+            negative_count=Counter(negative_reviews)
 
-
-        # 불용어 제거
-        temp_dic_p={}
-
-        for key, value in rank_text_p.items():
-            if key not in k_stopword:
-                temp_dic_p[key]=value
-
-        temp_dic_n={}
-        for key, value in rank_text_n.items():
-            if key not in k_stopword:
-                temp_dic_n[key]=value
+            rank_text_p=dict(positive_count)
+            rank_text_n=dict(negative_count)
 
 
-        wordcloud_p = WordCloud(
-            font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
-            width = 500,
-            height = 500,
-            background_color = "white",
-            mask = mask_p
-        )
+            # 불용어 제거
+            temp_dic_p={}
 
-        wordcloud_n = WordCloud(
-            font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
-            width = 500,
-            height = 500,
-            background_color = "white",
-            mask = mask_n
-        )
+            for key, value in rank_text_p.items():
+                if key not in k_stopword:
+                    temp_dic_p[key]=value
 
-        wordcloud_p = wordcloud_p.generate_from_frequencies(temp_dic_p)
-        wordcloud_n = wordcloud_n.generate_from_frequencies(temp_dic_n)
-        image_colors_p = ImageColorGenerator(mask_p)
-        image_colors_n = ImageColorGenerator(mask_n)
+            temp_dic_n={}
+            for key, value in rank_text_n.items():
+                if key not in k_stopword:
+                    temp_dic_n[key]=value
 
 
-        # Title 업데이트
-        title = df2['title'][i]
-        query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
-        cur.execute(query) # 제목 업데이트하는 쿼리 실행
+            wordcloud_p = WordCloud(
+                font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
+                width = 500,
+                height = 500,
+                background_color = "white",
+                mask = mask_p
+            )
 
-        query2 = "UPDATE album_album SET dt_created = datetime('now') WHERE id = '%s'" % (str(i+1))
-        cur.execute(query2) # 업데이트 날짜로 바꾸는 쿼리 실행
+            wordcloud_n = WordCloud(
+                font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
+                width = 500,
+                height = 500,
+                background_color = "white",
+                mask = mask_n
+            )
 
-        conn.commit() # DB에 반영
+            wordcloud_p = wordcloud_p.generate_from_frequencies(temp_dic_p)
+            wordcloud_n = wordcloud_n.generate_from_frequencies(temp_dic_n)
+            image_colors_p = ImageColorGenerator(mask_p)
+            image_colors_n = ImageColorGenerator(mask_n)
 
-        #긍정리뷰 이미지 저장
-        plt.figure(figsize=(10, 10))
-        plt.imshow(wordcloud_p.recolor(color_func=image_colors_p), interpolation="bilinear")
-        plt.axis("off")
 
-        total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+            # Title 업데이트
+            title = df2['title'][i]
+            query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
+            cur.execute(query) # 제목 업데이트하는 쿼리 실행
 
-        # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
-        if os.path.isfile(total_good_img_save_path):
-            os.remove(total_good_img_save_path)
+            query2 = "UPDATE album_album SET dt_created = datetime('now') WHERE id = '%s'" % (str(i+1))
+            cur.execute(query2) # 업데이트 날짜로 바꾸는 쿼리 실행
 
-        plt.savefig(total_good_img_save_path)
+            conn.commit() # DB에 반영
 
-        #부정리뷰 이미지 저장
-        plt.figure(figsize=(10,10))
-        plt.imshow(wordcloud_n.recolor(color_func=image_colors_n), interpolation="bilinear")
-        plt.axis("off")
+            #긍정리뷰 이미지 저장
+            plt.figure(figsize=(10, 10))
+            plt.imshow(wordcloud_p.recolor(color_func=image_colors_p), interpolation="bilinear")
+            plt.axis("off")
 
-        total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+            total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_good_img_save_path):
+                os.remove(total_good_img_save_path)
+
+            plt.savefig(total_good_img_save_path)
+
+            #부정리뷰 이미지 저장
+            plt.figure(figsize=(10,10))
+            plt.imshow(wordcloud_n.recolor(color_func=image_colors_n), interpolation="bilinear")
+            plt.axis("off")
+
+            total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+                
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_bad_img_save_path):
+                os.remove(total_bad_img_save_path)
+                
+            plt.savefig(total_bad_img_save_path)
+
+            # 포스터 변경
+            poster_url = df2['img'][i]
+            os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
+
+        # 해당 영화가 부정적인 리뷰만 있는 경우
+        elif len(df3[df3['label']==1]['tokenized'])==0:
+
+            negative_reviews = np.hstack(df3[df3['label']==0]['tokenized'].values)
+            negative_count=Counter(negative_reviews)
+
+            rank_text_n=dict(negative_count)
+
+
+            # 불용어 제거
+            temp_dic_n={}
+            for key, value in rank_text_n.items():
+                if key not in k_stopword:
+                    temp_dic_n[key]=value
+
+            wordcloud_n = WordCloud(
+                font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
+                width = 500,
+                height = 500,
+                background_color = "white",
+                mask = mask_n
+            )
+
+            wordcloud_n = wordcloud_n.generate_from_frequencies(temp_dic_n)
             
-        # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
-        if os.path.isfile(total_bad_img_save_path):
-            os.remove(total_bad_img_save_path)
-            
-        plt.savefig(total_bad_img_save_path)
+            image_colors_n = ImageColorGenerator(mask_n)
 
-        # 포스터 변경
-        poster_url = df2['img'][i]
-        os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
+
+            # Title 업데이트
+            title = df2['title'][i]
+            query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
+            cur.execute(query) # 제목 업데이트하는 쿼리 실행
+
+            query2 = "UPDATE album_album SET dt_created = datetime('now') WHERE id = '%s'" % (str(i+1))
+            cur.execute(query2) # 업데이트 날짜로 바꾸는 쿼리 실행
+
+            conn.commit() # DB에 반영
+
+            #긍정리뷰 이미지 저장
+            plt.figure(figsize=(10, 10))
+            plt.imshow(img_w, interpolation="bilinear")
+            plt.axis("off")
+
+            total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_good_img_save_path):
+                os.remove(total_good_img_save_path)
+
+            plt.savefig(total_good_img_save_path)
+
+            #부정리뷰 이미지 저장
+            plt.figure(figsize=(10,10))
+            plt.imshow(wordcloud_n.recolor(color_func=image_colors_n), interpolation="bilinear")
+            plt.axis("off")
+
+            total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+                
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_bad_img_save_path):
+                os.remove(total_bad_img_save_path)
+                
+            plt.savefig(total_bad_img_save_path)
+
+            # 포스터 변경
+            poster_url = df2['img'][i]
+            os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
+
+        # 해당 영화가 긍정적인 리뷰만 있는 경우
+        elif len(df3[df3['label']==0]['tokenized'])==0:
+            
+            positive_reviews = np.hstack(df3[df3['label']==1]['tokenized'].values)
+            positive_count=Counter(positive_reviews)
+
+            rank_text_p=dict(positive_count)
+
+
+            # 불용어 제거
+            temp_dic_p={}
+
+            for key, value in rank_text_p.items():
+                if key not in k_stopword:
+                    temp_dic_p[key]=value
+
+            wordcloud_p = WordCloud(
+                font_path = WORD_CLOUD_DATA_PATH + 'NanumGothic.ttf',
+                width = 500,
+                height = 500,
+                background_color = "white",
+                mask = mask_p
+            )
+
+            wordcloud_p = wordcloud_p.generate_from_frequencies(temp_dic_p)
+            image_colors_p = ImageColorGenerator(mask_p)
+
+
+            # Title 업데이트
+            title = df2['title'][i]
+            query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
+            cur.execute(query) # 제목 업데이트하는 쿼리 실행
+
+            query2 = "UPDATE album_album SET dt_created = datetime('now') WHERE id = '%s'" % (str(i+1))
+            cur.execute(query2) # 업데이트 날짜로 바꾸는 쿼리 실행
+
+            conn.commit() # DB에 반영
+
+            #긍정리뷰 이미지 저장
+            plt.figure(figsize=(10, 10))
+            plt.imshow(wordcloud_p.recolor(color_func=image_colors_p), interpolation="bilinear")
+            plt.axis("off")
+
+            total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_good_img_save_path):
+                os.remove(total_good_img_save_path)
+
+            plt.savefig(total_good_img_save_path)
+
+            #부정리뷰 이미지 저장
+            plt.figure(figsize=(10,10))
+            plt.imshow(img_w,interpolation='bilinear')
+            plt.axis("off")
+
+            total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+                
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_bad_img_save_path):
+                os.remove(total_bad_img_save_path)
+                
+            plt.savefig(total_bad_img_save_path)
+
+            # 포스터 변경
+            poster_url = df2['img'][i]
+            os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
 
     # for문 끝나고 DB 연결 해제
     cur.close()

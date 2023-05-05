@@ -34,7 +34,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 DJANGO_APPS = [
-    'django_crontab', # crontab 추가
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,7 +52,8 @@ THIRD_PARTY_APPS = [
     'widget_tweaks',
     'allauth', # 항상 allauth보다 새로 만든 앱이 위에 와 있어야 함
     'allauth.account',
-    'allauth.socialaccount'
+    'allauth.socialaccount',
+    'django_crontab' # crontab 추가
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # crontab 추가
 CRONJOBS = [
     # test
-    # ('*/5 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
+    #('*/1 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
     # 자정 추가
     ('0 0 * * *', 'album.cron.save_csv_from_git', '>> ' + os.path.join(BASE_DIR, 'log/data_save.log') + ' 2>&1 '),
     ('5 0 * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'log/web_update_cron.log') + ' 2>&1')
