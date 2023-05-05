@@ -5,10 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.webdriver.chrome.options import Options
 
-from fake_useragent import UserAgent
 from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.by import By
 
 import time
 import pandas as pd
@@ -54,10 +51,7 @@ class ReviewScraper:
             "--disable-extensions",
             "--disable-dev-shm-usage"
         ]
-        # ua = UserAgent(verify_ssl=False)
-        # user_agent = ua.random
-        # print(user_agent)
-        # chrome_options.add_argument(f'user-agent={user_agent}')
+
         if options:
             for option in options:
                 chrome_options.add_argument(option)
@@ -159,12 +153,11 @@ def driver_get(executable_path):
             "--disable-extensions",
             "--disable-dev-shm-usage"
     ]
-    # ua = UserAgent(verify_ssl=False)
-    # user_agent = ua.random
-    # chrome_options.add_argument(f'user-agent={user_agent}')
+
     if options:
         for option in options:
             chrome_options.add_argument(option)
+            
     # service = ChromeService(executable_path=driver_path)
     # driver = webdriver.Chrome(service=service, options=chrome_options)
     driver = webdriver.Chrome(driver_path, options=chrome_options)
