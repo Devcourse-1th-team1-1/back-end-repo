@@ -5,26 +5,24 @@
 {% block title %}{{ album.title }} | movieReviewCloud{% endblock title %}
 
 {% block content %}
-<main class="site-body">
+<main class="site-body album-detail-page">
   <article class="album-detail max-content-width">
     <div class="album-info">
       <h1 class="title">{{ album.title }}</h1>
-      <div class="author">
-        <a class="album-author">
-          <span>{{ album.author.nickname }}</span>
-        </a>
-      </div>
       <date class="date">{{ album.dt_created|date:"Y년 n월 j일" }}</date>
     </div>
 
     <div class="content">
       <img class="thumb" src="{{ album.image1.url }}">
-      {% if album.image2 %}
-        <img class="thumb" src="{{ album.image2.url }}">
-      {% endif %}
-      {% if album.image3 %}
-        <img class="thumb" src="{{ album.image3.url }}">
-      {% endif %}
+      <br><br>
+      <div class="word-cloud-group">
+        {% if album.image2 %}
+          <img class="thumb word-cloud" src="{{ album.image2.url }}">
+        {% endif %}
+        {% if album.image3 %}
+          <img class="thumb word-cloud" src="{{ album.image3.url }}">
+        {% endif %}
+      </div>
     </div>
     <div class="btn-group me-2" role="group" aria-label="First group">
       <div>
@@ -100,7 +98,7 @@
           </div>
         {% endfor %}
       </div>
-      
+
     </div>
 
     <div class="footer">
