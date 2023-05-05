@@ -50,7 +50,7 @@
         </form>
       </div>
     </div>
-    
+
 
 
     <div class="comment">
@@ -83,19 +83,21 @@
       {% endif %}
       <div class="comment-list">
         {% for comment in album.comment_set.all %}
-          <div class="comment-item">
-            <div class="comment-author">
-              <a class="comment-author-name">
-                <span>{{ comment.author.nickname }}</span>
-              </a>
+          {% if comment.dt_created > album.dt_updated %}
+            <div class="comment-item">
+              <div class="comment-author">
+                <a class="comment-author-name">
+                  <span>{{ comment.author.nickname }}</span>
+                </a>
+              </div>
+              <div class="comment-content">
+                <p>{{ comment.content }}</p>
+              </div>
+              <div class="comment-date">
+                <date>{{ comment.dt_created|date:"Y년 n월 j일" }}</date>
+              </div>
             </div>
-            <div class="comment-content">
-              <p>{{ comment.content }}</p>
-            </div>
-            <div class="comment-date">
-              <date>{{ comment.dt_created|date:"Y년 n월 j일" }}</date>
-            </div>
-          </div>
+          {% endif %}
         {% endfor %}
       </div>
 
