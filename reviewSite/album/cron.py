@@ -9,8 +9,6 @@ import os
 import sqlite3
 from datetime import datetime
 
-#def hello_every_minute():
-#    print('hello')
 
 def update_info():
     """
@@ -20,10 +18,10 @@ def update_info():
 
     """
     경로가 사람마다 다를 수도 있으니 주의하세요!! 만약 오류가 난다면 로그를 확인해주세요
+    우분투 환경에서는 crontab 실행하려할 때 추가적으로 이 명령어 실행 $ sudo /usr/sbin/cron
     """
+
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # print(BASE_DIR)
-    # print(os.getcwd())
 
     DB_PATH = os.path.join(BASE_DIR, 'db.sqlite3') # DB 경로
     IMG_SAVE_PATH = os.path.join(BASE_DIR, 'media/album_pics/') # 이미지 저장할 경로
@@ -31,8 +29,8 @@ def update_info():
 
 
     # csv 파일 불러오기
-    df = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_reviews_total.csv'))
-    df2 = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_rankings.csv'))
+    reviews_df = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_reviews_total.csv'))
+    movie_ranking_df = pd.read_csv(os.path.join(BASE_DIR, 'data/movie_rankings.csv'))
     k_stopword = pd.read_csv(WORD_CLOUD_DATA_PATH + "korean_stopword.csv")
     k_stopword = list(k_stopword['불용어'])
     k_stopword.append('영화')
@@ -48,21 +46,21 @@ def update_info():
     img_w = np.array(Image.open(img_white))
 
     # 영화제목 콜론(:) 문자열 '-'로 변환
-    df=df.replace({'movie_title':{':':'-'}},regex=True)
-    df2=df2.replace({'title':{':':'-'}},regex=True)
+    reviews_df = reviews_df.replace({'movie_title':{':':'-'}},regex=True)
+    movie_ranking_df = movie_ranking_df.replace({'title':{':':'-'}},regex=True)
 
     # rate가 문자인 경우 삭제, 이상한 단어 삭제
-    df['rate'] = df['rate'].str.replace(pat=r'[ㄱ-ㅣ가-힣]+', repl= r'', regex=True)
-    df = df[df.rate != '']
-    df['review'] = df['review'].astype(str)
-    df['rate'] = df['rate'].astype(float)
+    reviews_df['rate'] = reviews_df['rate'].str.replace(pat=r'[ㄱ-ㅣ가-힣]+', repl= r'', regex=True)
+    reviews_df = reviews_df[reviews_df.rate != '']
+    reviews_df['review'] = reviews_df['review'].astype(str)
+    reviews_df['rate'] = reviews_df['rate'].astype(float)
 
     # label 열 추가, rate가 3.5이상일때 label==1, 미만일때 label==0
-    df['label'] = np.select([df.rate>=3.5], [1], default=0)
+    reviews_df['label'] = np.select([reviews_df.rate>=3.5], [1], default=0)
 
     # tokenizer 열 추가
     tokenizer = Okt()
-    df['tokenized'] = df['review'].apply(tokenizer.nouns)
+    reviews_df['tokenized'] = reviews_df['review'].apply(tokenizer.nouns)
 
 
     # DB 연결
@@ -71,17 +69,17 @@ def update_info():
 
 
     # 영화 랭킹 순으로 긍정, 부정 워드 클라우드 만들기
-    for i in range(0,len(df2)):
+    for i in range(0,len(movie_ranking_df)):
 
-        df3 = df.loc[df['movie_title']==df2['title'][i]]
+        matched_title_reviews_df = reviews_df.loc[reviews_df['movie_title']==movie_ranking_df['title'][i]]
 
         # 해당 영화에 리뷰가 없을경우 continue
-        if len(df3) == 0:
+        if len(matched_title_reviews_df) == 0:
             continue
 
-        elif len(df3[df3['label']==1]['tokenized'])!=0 and len(df3[df3['label']==0]['tokenized'])!=0: 
-            positive_reviews = np.hstack(df3[df3['label']==1]['tokenized'].values)
-            negative_reviews = np.hstack(df3[df3['label']==0]['tokenized'].values)
+        elif len(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'])!=0 and len(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'])!=0: 
+            positive_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'].values)
+            negative_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'].values)
 
             positive_count=Counter(positive_reviews)
             negative_count=Counter(negative_reviews)
@@ -126,7 +124,7 @@ def update_info():
 
 
             # Title 업데이트
-            title = df2['title'][i]
+            title = movie_ranking_df['title'][i]
             query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
             cur.execute(query) # 제목 업데이트하는 쿼리 실행
 
@@ -162,13 +160,13 @@ def update_info():
             plt.savefig(total_bad_img_save_path)
 
             # 포스터 변경
-            poster_url = df2['img'][i]
+            poster_url = movie_ranking_df['img'][i]
             os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
 
         # 해당 영화가 부정적인 리뷰만 있는 경우
-        elif len(df3[df3['label']==1]['tokenized'])==0:
+        elif len(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'])==0:
 
-            negative_reviews = np.hstack(df3[df3['label']==0]['tokenized'].values)
+            negative_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'].values)
             negative_count=Counter(negative_reviews)
 
             rank_text_n=dict(negative_count)
@@ -194,7 +192,7 @@ def update_info():
 
 
             # Title 업데이트
-            title = df2['title'][i]
+            title = movie_ranking_df['title'][i]
             query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
             cur.execute(query) # 제목 업데이트하는 쿼리 실행
 
@@ -230,13 +228,13 @@ def update_info():
             plt.savefig(total_bad_img_save_path)
 
             # 포스터 변경
-            poster_url = df2['img'][i]
+            poster_url = movie_ranking_df['img'][i]
             os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
 
         # 해당 영화가 긍정적인 리뷰만 있는 경우
-        elif len(df3[df3['label']==0]['tokenized'])==0:
+        elif len(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'])==0:
             
-            positive_reviews = np.hstack(df3[df3['label']==1]['tokenized'].values)
+            positive_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'].values)
             positive_count=Counter(positive_reviews)
 
             rank_text_p=dict(positive_count)
@@ -262,7 +260,7 @@ def update_info():
 
 
             # Title 업데이트
-            title = df2['title'][i]
+            title = movie_ranking_df['title'][i]
             query = "UPDATE album_album SET title = '%s' WHERE id = '%s'" % (title, str(i+1))
             cur.execute(query) # 제목 업데이트하는 쿼리 실행
 
@@ -298,7 +296,7 @@ def update_info():
             plt.savefig(total_bad_img_save_path)
 
             # 포스터 변경
-            poster_url = df2['img'][i]
+            poster_url = movie_ranking_df['img'][i]
             os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
 
     # for문 끝나고 DB 연결 해제

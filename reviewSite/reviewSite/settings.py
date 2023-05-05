@@ -112,8 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # crontab 추가
 CRONJOBS = [
-    # test
-    #('*/1 * * * *', 'album.cron.hello_every_minute', '>> ' + os.path.join(BASE_DIR, 'log/cron.log')),
     # 자정 추가
     ('0 0 * * *', 'album.cron.save_csv_from_git', '>> ' + os.path.join(BASE_DIR, 'log/data_save.log') + ' 2>&1 '),
     ('5 0 * * *', 'album.cron.update_info', '>> ' + os.path.join(BASE_DIR, 'log/web_update_cron.log') + ' 2>&1')
