@@ -63,6 +63,7 @@
     font-weight: 400;
     letter-spacing: -0.32px;
     cursor: pointer;
+    margin-left: 10px;
     background-color: var(--button-primary-background);
     color: var(--button-text);
   }
