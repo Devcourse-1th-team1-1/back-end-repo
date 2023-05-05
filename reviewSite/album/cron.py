@@ -6,9 +6,9 @@ import pandas as pd
 from konlpy.tag import Okt # 형태소 분석기 Okt
 from collections import Counter
 import os
-import sqlite3
 from datetime import datetime
 from album.models import Album
+import shutil
 
 
 def update_info():
@@ -65,19 +65,16 @@ def update_info():
 
 
     # 영화 랭킹 순으로 긍정, 부정 워드 클라우드 만들기
-    image_colors_p = None
-    image_colors_n = None
+    is_positive_comment_sufficent = False
+    is_negative_comment_sufficent = False
 
     for i in range(0,len(movie_ranking_df)):
 
         matched_title_reviews_df = reviews_df.loc[reviews_df['movie_title']==movie_ranking_df['title'][i]]
 
-        # 해당 영화에 리뷰가 없을경우 continue
-        if len(matched_title_reviews_df) == 0:
-            continue
-
         # 긍정 리뷰가 1개 이상이라면 긍정 워드클라우드 생성
         if len(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'])!=0:
+            is_positive_comment_sufficent = True
 
             positive_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==1]['tokenized'].values)
             positive_count=Counter(positive_reviews)
@@ -106,6 +103,8 @@ def update_info():
 
         # 부정 리뷰가 1개 이상이라면 부정 워드클라우드 생성
         if len(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'])!=0:
+            is_negative_comment_sufficent = True
+
             negative_reviews = np.hstack(matched_title_reviews_df[matched_title_reviews_df['label']==0]['tokenized'].values)
             negative_count=Counter(negative_reviews)
 
@@ -127,8 +126,53 @@ def update_info():
             )
 
             wordcloud_n = wordcloud_n.generate_from_frequencies(temp_dic_n)
-
             image_colors_n = ImageColorGenerator(mask_n)
+
+
+
+        total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+
+        # 긍정 워드클라우드가 생성된 경우 이미지 저장
+        if is_positive_comment_sufficent:
+            plt.figure(figsize=(10, 10))
+            plt.imshow(wordcloud_p.recolor(color_func=image_colors_p), interpolation="bilinear")
+            plt.axis("off")
+
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_good_img_save_path):
+                os.remove(total_good_img_save_path)
+            plt.savefig(total_good_img_save_path)
+        # 아닐 경우 흰 이미지로 대체
+        else:
+            shutil.copy2(img_white, total_good_img_save_path) # shutil.copy2(src, dst) : src의 파일 정보를 dst에 복사
+
+
+        total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+
+        # 부정 워드클라우드가 생성된 경우 이미지 저장
+        if is_negative_comment_sufficent:
+            plt.figure(figsize=(10,10))
+            plt.imshow(wordcloud_n.recolor(color_func=image_colors_n), interpolation="bilinear")
+            plt.axis("off")
+
+            # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
+            if os.path.isfile(total_bad_img_save_path):
+                os.remove(total_bad_img_save_path)
+            plt.savefig(total_bad_img_save_path)
+        # 아닐 경우 흰 이미지로 대체
+        else:
+            shutil.copy2(img_white, total_bad_img_save_path) # shutil.copy2(src, dst) : src의 파일 정보를 dst에 복사
+
+
+        # flag 초기화
+        is_positive_comment_sufficent = False
+        is_negative_comment_sufficent = False
+
+
+        # 포스터 변경
+        poster_url = movie_ranking_df['img'][i]
+        os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
+
 
 
         # 정보를 변경할 앨범 객체 가져오기
@@ -139,7 +183,7 @@ def update_info():
         album.title = title
 
         # 업데이트 날짜로 바꾸기
-        album.dt_updated = datetime.datetime.now()
+        album.dt_updated = datetime.now()
 
         # 추천한 유저 리스트 초기화
         album.positive_voters.set([])
@@ -151,43 +195,6 @@ def update_info():
 
         # 변경 사항 저장
         album.save()
-
-
-        #긍정리뷰 이미지 저장
-        plt.figure(figsize=(10, 10))
-        if image_colors_p is None:
-            plt.imshow(img_w, interpolation="bilinear")
-        else:
-            plt.imshow(wordcloud_p.recolor(color_func=image_colors_p), interpolation="bilinear")
-        plt.axis("off")
-
-        total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
-
-        # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
-        if os.path.isfile(total_good_img_save_path):
-            os.remove(total_good_img_save_path)
-
-        plt.savefig(total_good_img_save_path)
-
-        #부정리뷰 이미지 저장
-        plt.figure(figsize=(10,10))
-        if image_colors_n is None:
-            plt.imshow(img_w, interpolation="bilinear")
-        else:
-            plt.imshow(wordcloud_n.recolor(color_func=image_colors_n), interpolation="bilinear")
-        plt.axis("off")
-
-        total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
-
-        # 이미지 덮어쓰기가 plt에서는 지원이 안되므로 삭제했다가 저장 새로하기
-        if os.path.isfile(total_bad_img_save_path):
-            os.remove(total_bad_img_save_path)
-
-        plt.savefig(total_bad_img_save_path)
-
-        # 포스터 변경
-        poster_url = movie_ranking_df['img'][i]
-        os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
 
 
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
