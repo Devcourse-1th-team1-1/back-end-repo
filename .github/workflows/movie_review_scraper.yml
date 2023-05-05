@@ -2,7 +2,7 @@ name: Movie Review Scraper
 
 on:
   schedule:
-    - cron: '*/20 * * * *'  # every day at 00:00 UTC
+    - cron: '0 0 * * *'  # every day at 00:00 UTC
   push:
     branches:
       - crawling
@@ -56,23 +56,24 @@ jobs:
         run: |
           python ./crawlingFolder/movie_ranking_info.py
 
-      # - name: Scrape reviews and save to CSV - movie_review_crawler.py
-      #   run: |
-      #     python ./movie_review_crawler.py
-
-      - name: Commit files
+      - name: Scrape reviews and save to CSV - movie_review_crawler.py
         run: |
-          git config --local user.email "hajuny129@gmail.com"
-          git config --local user.name "HaJunYoo"
-          git add .
-          git commit -m "$(date +'%Y-%m-%d') Run crawler and update current data"
+          python ./crawlingFolder/movie_review_crawler.py
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch: data
-          force: true
+      # - name: Commit files
+      #   run: |
+      #     git config --local user.email "hajuny129@gmail.com"
+      #     git config --local user.name "HaJunYoo"
+      #     git add .
+      #     git commit -m "$(date +'%Y-%m-%d') Run crawler and update current data"
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      #     branch: data
+      #     force: true
+
       # - name: Commit and push changes
       #   uses: stefanzweifel/git-auto-commit-action@v4
         # with:
