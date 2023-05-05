@@ -31,14 +31,16 @@ def driver_get(executable_path):
     
     chrome_options = Options()
     options = [
-        # "--headless",
-        # "--disable-gpu",
-        "--window-size=1920,1200",
-        # "--ignore-certificate-errors",
-        "--disable-infobars",
-        "--disable-extensions",
-        # "--no-sandbox",
-        # "--disable-dev-shm-usage"
+            "--headless=new",
+            "--no-sandbox"
+            "--disable-gpu",
+            "--start-maximized",
+            # "--window-size=1980,1030",
+            # "--window-size=1920,1200",
+            "--ignore-certificate-errors",
+            "--disable-infobars",
+            "--disable-extensions",
+            "--disable-dev-shm-usage"
     ]
     # ua = UserAgent(verify_ssl=False)
     # user_agent = ua.random
@@ -46,9 +48,9 @@ def driver_get(executable_path):
     if options:
         for option in options:
             chrome_options.add_argument(option)
-
-    service = ChromeService(executable_path=driver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # service = ChromeService(executable_path=driver_path)
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(driver_path, options=chrome_options)
     return driver
 
 
@@ -78,14 +80,16 @@ class ReviewScraper:
         
         chrome_options = Options()
         options = [
-            # "--headless",
-            # "--disable-gpu",
-            "--window-size=1920,1200",
-            # "--ignore-certificate-errors",
+            "--headless=new",
+            "--no-sandbox"
+            "--disable-gpu",
+            "--start-maximized",
+            # "--window-size=1980,1030",
+            # "--window-size=1920,1200",
+            "--ignore-certificate-errors",
             "--disable-infobars",
             "--disable-extensions",
-            # "--no-sandbox",
-            # "--disable-dev-shm-usage"
+            "--disable-dev-shm-usage"
         ]
         # ua = UserAgent(verify_ssl=False)
         # user_agent = ua.random
@@ -95,8 +99,8 @@ class ReviewScraper:
             for option in options:
                 chrome_options.add_argument(option)
 
-        service = ChromeService(executable_path=driver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # service = ChromeService(executable_path=driver_path)
+        driver = webdriver.Chrome(driver_path, options=chrome_options)
         return driver
 
     def driver_initialize(self):
@@ -111,15 +115,19 @@ class ReviewScraper:
         driver.implicitly_wait(5)
         
         driver.get(movie_comment_link)
-        driver.implicitly_wait(13) # 웹 브라우저 창이 열리는데, 이 창이 완전히 로드되기 까지 5초간 대기
+        driver.implicitly_wait(10) # 웹 브라우저 창이 열리는데, 이 창이 완전히 로드되기 까지 5초간 대기
         # element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "css-10n5vg9-VisualUl ep5cwgq0")))
-        prev_height = driver.execute_script("return document.body.scrollHeight")
+        prev_height = driver.execute_script("document.documentElement.style.height = '100%'; return document.body.clientHeight;")
 
+        # prev_height = driver.execute_script("return document.body.scrollHeight") # clientHeight
         print("crawling start -> scroll height: ",prev_height)
         while len(self.reviews) < 200:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            # window.scrollTo(0,document.body.clientHeight)
+
+            # driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+            driver.execute_script("window.scrollTo(0, document.body.clientHeight)")
             time.sleep(2)
-            current_height = driver.execute_script("return document.body.scrollHeight")
+            current_height = driver.execute_script("return document.body.clientHeight;")
             if current_height == prev_height:
                 break
             prev_height = current_height
@@ -148,7 +156,7 @@ class ReviewScraper:
 
                 if len(self.reviews) >= 200:
                     break
-            print(f"현재까지 reviews: {len(self.reviews)}")
+            # print(f"현재까지 reviews: {len(self.reviews)}")
         
         # driver.quit()
         print(f"Total reviews: {len(self.reviews)}")
@@ -177,7 +185,7 @@ if __name__ == "__main__":
         scraper.get_reviews()
 
         cnt = 0
-        while len(scraper.reviews) < 5 and cnt < 5:
+        while len(scraper.reviews) < 5 and cnt < 3:
             scraper = ReviewScraper(movie_url=movie_url, driver = chrome_driver, executable_path=chrome_driver_path,
                                     movie_title=movie_title)
             scraper.get_reviews()
