@@ -31,12 +31,12 @@
 ![image](https://user-images.githubusercontent.com/74031620/236397375-c98ba5d5-4af8-4864-8a6b-2f4ecf9f8d2c.png)
 
 
-## 프로젝트 크롤링 출처
+## 💬 프로젝트 크롤링 출처
 
 - [넷플릭스 영화 TOP 10 목록](https://pedia.watcha.com/ko-KR)
 - 그리고, 이에 따른 왓챠피디아 영화 코멘트 text
 
-## Tech Stack
+## 🛠 Tech Stack
 
 | 분야        | Stack  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -46,10 +46,9 @@
 | 데이터베이스 | <img src="https://img.shields.io/badge/sqlite-4479A1?style=for-the-badge&logo=sqlite&logoColor=white">  |
 데이터 분석 & 데이터 크롤링 | <img src="https://img.shields.io/badge/jupyter notebook-D9D9D9?style=for-the-badge&logo=jupyter&logoColor=orange"> <img src="https://img.shields.io/badge/github action-181717?style=for-the-badge&logo=githubactions&logoColor=white"> <img src="https://img.shields.io/badge/docker-0080FF?style=for-the-badge&logo=docker&logoColor=white"> |
 
-## 프로젝트 구조
+## ⚙ 프로젝트 구조
+<img align="center" width="400" src="https://user-images.githubusercontent.com/74031620/236468055-0751a744-adfd-434f-86f3-27d9e98e2d5f.png">
 
-Django, Github Action 등 동작하는 방식 사진 추가
+## ✏ Database ERD
 
-## Database ERD
-
-ERD 사진 추가
+<img align="center" width="400" src="https://user-images.githubusercontent.com/74031620/236463780-e30939d7-041f-415d-abe1-b1ae4ecb823b.png">
