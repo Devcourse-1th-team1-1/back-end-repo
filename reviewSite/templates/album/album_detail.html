@@ -9,7 +9,7 @@
   <article class="album-detail max-content-width">
     <div class="album-info">
       <h1 class="title">{{ album.title }}</h1>
-      <date class="date">{{ album.dt_created|date:"Y년 n월 j일" }}</date>
+      <date class="date">{{ album.dt_updated|date:"Y년 n월 j일" }}</date>
     </div>
 
     <div class="content">
@@ -50,13 +50,12 @@
         </form>
       </div>
     </div>
-    
+
 
 
     <div class="comment">
       <div class="comment-header">
         <h2 class="comment-title">댓글</h2>
-        <div class="comment-count">댓글 수: {{ album.comment_set.count }}개</div>
       </div>
       {% if user.is_authenticated %}
         {% if error_message %}
@@ -83,19 +82,21 @@
       {% endif %}
       <div class="comment-list">
         {% for comment in album.comment_set.all %}
-          <div class="comment-item">
-            <div class="comment-author">
-              <a class="comment-author-name">
-                <span>{{ comment.author.nickname }}</span>
-              </a>
+          {% if comment.dt_created > album.dt_updated %}
+            <div class="comment-item">
+              <div class="comment-author">
+                <a class="comment-author-name">
+                  <span>{{ comment.author.nickname }}</span>
+                </a>
+              </div>
+              <div class="comment-content">
+                <p>{{ comment.content }}</p>
+              </div>
+              <div class="comment-date">
+                <date>{{ comment.dt_created|date:"Y년 n월 j일" }}</date>
+              </div>
             </div>
-            <div class="comment-content">
-              <p>{{ comment.content }}</p>
-            </div>
-            <div class="comment-date">
-              <date>{{ comment.dt_created|date:"Y년 n월 j일" }}</date>
-            </div>
-          </div>
+          {% endif %}
         {% endfor %}
       </div>
 
