@@ -47,7 +47,7 @@
 데이터 분석 & 데이터 크롤링 | <img src="https://img.shields.io/badge/jupyter notebook-D9D9D9?style=for-the-badge&logo=jupyter&logoColor=orange"> <img src="https://img.shields.io/badge/github action-181717?style=for-the-badge&logo=githubactions&logoColor=white"> <img src="https://img.shields.io/badge/docker-0080FF?style=for-the-badge&logo=docker&logoColor=white"> |
 
 ## ⚙ 프로젝트 구조
-<img align="center" width="400" src="https://user-images.githubusercontent.com/74031620/236468055-0751a744-adfd-434f-86f3-27d9e98e2d5f.png">
+<img align="center" width="400" src="https://user-images.githubusercontent.com/74031620/236625968-ba6a9656-e728-4520-b5e1-be4f72b67958.png">
 
 ## ✏ Database ERD
 
