@@ -46,33 +46,35 @@ jobs:
       - name: Install requirements
         run: pip install -r ./crawlingFolder/requirements.txt
 
-      # - name: Setup Chromedriver
-      #   uses: nanasess/setup-chromedriver@v2.0.0
-      
-      # - name: Change chromedriver permission
-      #   run: chmod +x ./chromedriver
 
       - name: Scrape movie ranking and save to CSV - movie_ranking_info.py
         run: |
           python ./crawlingFolder/movie_ranking_info.py
+      
 
       - name: Scrape reviews and save to CSV - movie_review_crawler.py
         run: |
           python ./crawlingFolder/movie_review_crawler.py
 
-      # - name: Commit files
-      #   run: |
-      #     git config --local user.email "hajuny129@gmail.com"
-      #     git config --local user.name "HaJunYoo"
-      #     git add .
-      #     git commit -m "$(date +'%Y-%m-%d') Run crawler and update current data"
+      - name: Check changes
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes detected. Skipping commit and push." && exit 0
+          fi
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      #     branch: data
-      #     force: true
+      - name: Commit files
+        run: |
+          git config --local user.email "hajuny129@gmail.com"
+          git config --local user.name "HaJunYoo"
+          git add ./crawlingFolder/data/*.csv
+          git commit -m "$(date +'%Y-%m-%d') Run crawler and update current data"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          # branch: data
+          force: true
 
       # - name: Commit and push changes
       #   uses: stefanzweifel/git-auto-commit-action@v4
