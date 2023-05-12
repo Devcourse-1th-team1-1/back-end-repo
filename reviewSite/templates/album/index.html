@@ -11,7 +11,7 @@
         {% for album in albums %}
           <a href="{% url 'album-detail' album.id %}">
             <section class="us-card content">
-                <div class="thumb" style="background-image: url('{{ album.image1.url }}');"></div>
+                <div class="thumb" style="background-image: url('{{ album.poster_src }}');"></div>
               <div class="body">
                 <h2 class="title">{{ album.title }}</h2>
                 <date class="date">{{ album.dt_updated|date:"Y년 n월 j일" }}</date>

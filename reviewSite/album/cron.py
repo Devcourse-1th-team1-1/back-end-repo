@@ -24,7 +24,6 @@ def update_info():
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    DB_PATH = os.path.join(BASE_DIR, 'db.sqlite3') # DB 경로
     IMG_SAVE_PATH = os.path.join(BASE_DIR, 'media/album_pics/') # 이미지 저장할 경로
     WORD_CLOUD_DATA_PATH = os.path.join(BASE_DIR, 'album/updateInfoFile/') # 워드클라우드 생성 위한 베이스 파일 경로
 
@@ -44,7 +43,6 @@ def update_info():
     img_white = WORD_CLOUD_DATA_PATH + 'white.png'
     mask_p = np.array(Image.open(img1))
     mask_n = np.array(Image.open(img2))
-    img_w = np.array(Image.open(img_white))
 
     # 영화제목 콜론(:) 문자열 '-'로 변환
     reviews_df = reviews_df.replace({'movie_title':{':':'-'}},regex=True)
@@ -129,8 +127,7 @@ def update_info():
             image_colors_n = ImageColorGenerator(mask_n)
 
 
-
-        total_good_img_save_path = IMG_SAVE_PATH + str(i+1) + '.png'
+        total_good_img_save_path = IMG_SAVE_PATH + 'good_word_cloud/' + str(i+1) + '.png'
 
         # 긍정 워드클라우드가 생성된 경우 이미지 저장
         if is_positive_comment_sufficent:
@@ -147,7 +144,7 @@ def update_info():
             shutil.copy2(img_white, total_good_img_save_path) # shutil.copy2(src, dst) : src의 파일 정보를 dst에 복사
 
 
-        total_bad_img_save_path = IMG_SAVE_PATH + str(i+1) + '-1' + '.png'
+        total_bad_img_save_path = IMG_SAVE_PATH + 'bad_word_cloud/' + str(i+1) + '.png'
 
         # 부정 워드클라우드가 생성된 경우 이미지 저장
         if is_negative_comment_sufficent:
@@ -168,19 +165,16 @@ def update_info():
         is_positive_comment_sufficent = False
         is_negative_comment_sufficent = False
 
-
-        # 포스터 변경
-        poster_url = movie_ranking_df['img'][i]
-        os.system("curl " + poster_url + " > " + IMG_SAVE_PATH + "%s_poster.jpg" % (str(i+1)))
-
-
-
         # 정보를 변경할 앨범 객체 가져오기
         album = Album.objects.get(id=i+1)
 
         # Title 업데이트
         title = movie_ranking_df['title'][i]
         album.title = title
+
+        # poster src 업데이트
+        poster_src = movie_ranking_df['img'][i]
+        album.poster_src = poster_src
 
         # 업데이트 날짜로 바꾸기
         album.dt_updated = datetime.now()
