@@ -13,14 +13,14 @@
     </div>
 
     <div class="content">
-      <img class="thumb" src="{{ album.image1.url }}">
+      <img class="thumb" src="{{ album.poster_src }}">
       <br><br>
       <div class="word-cloud-group">
-        {% if album.image2 %}
-          <img class="thumb word-cloud" src="{{ album.image2.url }}">
+        {% if album.good_cloud_img %}
+          <img class="thumb word-cloud" src="{{ album.good_cloud_img.url }}">
         {% endif %}
-        {% if album.image3 %}
-          <img class="thumb word-cloud" src="{{ album.image3.url }}">
+        {% if album.bad_cloud_img %}
+          <img class="thumb word-cloud" src="{{ album.bad_cloud_img.url }}">
         {% endif %}
       </div>
     </div>
@@ -104,12 +104,6 @@
 
     <div class="footer">
       <a class="back-link" href="{% url 'index' %}">&lt; 목록으로</a>
-      {% if album.author == user %}
-        <div class="buttons">
-          <a class="us-button warn" href="{% url 'album-delete' album.id %}">삭제</a>
-          <a class="us-button secondary" href="{% url 'album-update' album.id %}">수정</a>
-        </div>
-      {% endif %}
     </div>
   </article>
 </main>
